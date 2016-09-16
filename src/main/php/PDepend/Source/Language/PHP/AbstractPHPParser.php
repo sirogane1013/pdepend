@@ -53,10 +53,12 @@ use PDepend\Source\AST\ASTDeclareStatement;
 use PDepend\Source\AST\ASTExpression;
 use PDepend\Source\AST\ASTIndexExpression;
 use PDepend\Source\AST\ASTInterface;
+use PDepend\Source\AST\ASTMethod;
 use PDepend\Source\AST\ASTNode;
 use PDepend\Source\AST\ASTStatement;
 use PDepend\Source\AST\ASTSwitchStatement;
 use PDepend\Source\AST\ASTTrait;
+use PDepend\Source\AST\ASTUnaryExpression;
 use PDepend\Source\AST\ASTValue;
 use PDepend\Source\AST\State;
 use PDepend\Source\Builder\Builder;
@@ -205,21 +207,21 @@ abstract class AbstractPHPParser
      *
      * @var string
      */
-    private $docComment;
+    protected $docComment;
 
     /**
      * Bitfield of last parsed modifiers.
      *
      * @var integer
      */
-    private $modifiers = 0;
+    protected $modifiers = 0;
 
     /**
      * The actually parsed class or interface instance.
      *
      * @var \PDepend\Source\AST\AbstractASTClassOrInterface
      */
-    private $classOrInterface;
+    protected $classOrInterface;
 
     /**
      * If this property is set to <b>true</b> the parser will ignore all doc
@@ -234,7 +236,7 @@ abstract class AbstractPHPParser
      *
      * @var \PDepend\Source\Tokenizer\TokenStack
      */
-    private $tokenStack;
+    protected $tokenStack;
 
     /**
      * Used identifier builder instance.
@@ -798,7 +800,7 @@ abstract class AbstractPHPParser
      * @throws \PDepend\Source\Parser\UnexpectedTokenException
      * @throws \PDepend\Source\Parser\TokenStreamEndException
      */
-    private function parseTypeBody(AbstractASTType $type)
+    protected function parseTypeBody(AbstractASTType $type)
     {
         $this->classOrInterface = $type;
 
@@ -829,9 +831,7 @@ abstract class AbstractPHPParser
                         $defaultModifier
                     );
 
-                    if ($methodOrProperty instanceof \PDepend\Source\AST\ASTNode) {
-                        $type->addChild($methodOrProperty);
-                    }
+                    $type->addChild($methodOrProperty);
 
                     $this->reset();
                     break;
@@ -2438,9 +2438,7 @@ abstract class AbstractPHPParser
     {
         $scope = $this->builder->buildAstScopeStatement();
         while (($child = $this->parseOptionalStatement()) != null) {
-            if ($child instanceof \PDepend\Source\AST\ASTNode) {
-                $scope->addChild($child);
-            }
+            $scope->addChild($child);
         }
         return $scope;
     }
@@ -2875,7 +2873,7 @@ abstract class AbstractPHPParser
     {
         for ($i = count($expressions) - 2; $i >= 0; --$i) {
             $expr = $expressions[$i];
-            if ($expr instanceof \PDepend\Source\AST\ASTUnaryExpression) {
+            if ($expr instanceof ASTUnaryExpression) {
                 $child = $expressions[$i + 1];
 
                 $expr->addChild($child);
@@ -3045,11 +3043,9 @@ abstract class AbstractPHPParser
                     $statement = $this->parseOptionalStatement();
                     if ($statement === null) {
                         $this->consumeToken($tokenType);
-                    } elseif ($statement instanceof ASTNode) {
+                    } else {
                         $label->addChild($statement);
                     }
-                    // TODO: Change the <else if> into and <else> when the ast
-                    //       implementation is finished.
                     break;
             }
             $tokenType = $this->tokenizer->peek();
@@ -4149,7 +4145,7 @@ abstract class AbstractPHPParser
      */
     private function extractPostfixImage(ASTNode $node)
     {
-        while ($node instanceof \PDepend\Source\AST\ASTIndexExpression) {
+        while ($node instanceof ASTIndexExpression) {
             $node = $node->getChild(0);
         }
         return $node->getImage();
@@ -5536,11 +5532,7 @@ abstract class AbstractPHPParser
         $this->consumeToken(Tokens::T_CURLY_BRACE_OPEN);
 
         while (($stmt = $this->parseOptionalStatement()) !== null) {
-            // TODO: Remove if-statement once, we have translated functions and
-            //       closures into ast-nodes
-            if ($stmt instanceof \PDepend\Source\AST\ASTNode) {
-                $scope->addChild($stmt);
-            }
+            $scope->addChild($stmt);
         }
 
         $this->consumeComments();

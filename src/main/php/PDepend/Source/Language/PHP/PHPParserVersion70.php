@@ -197,6 +197,8 @@ abstract class PHPParserVersion70 extends PHPParserVersion56
 
         switch ($this->tokenizer->peek()) {
             case Tokens::T_CLASS:
+                $classOrInterface = $this->classOrInterface;
+
                 $this->consumeToken(Tokens::T_CLASS);
                 $this->consumeComments();
 
@@ -210,6 +212,8 @@ abstract class PHPParserVersion70 extends PHPParserVersion56
                 );
                 $class->setCompilationUnit($this->compilationUnit);
                 $class->setUserDefined();
+
+                $this->classOrInterface = $class;
 
                 $allocation->addChild($class);
 
@@ -231,6 +235,12 @@ abstract class PHPParserVersion70 extends PHPParserVersion56
                     $this->consumeToken(Tokens::T_IMPLEMENTS);
                     $this->parseInterfaceList($class);
                 }
+                $class = $this->parseTypeBody($class);
+
+                $this->docComment  = null;
+                $this->modifiers   = 0;
+
+                $this->classOrInterface = $classOrInterface;
 
                 return $class;
         }

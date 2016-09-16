@@ -146,6 +146,22 @@ abstract class AbstractASTCallable extends AbstractASTArtifact implements ASTCal
     }
 
     /**
+     * Returns the child at the given index.
+     *
+     * @param  integer $index
+     * @return \PDepend\Source\AST\ASTNode
+     * @throws \OutOfBoundsException
+     * @since 2.3
+     */
+    public function getChild($index)
+    {
+        if (isset($this->nodes[$index])) {
+            return $this->nodes[$index];
+        }
+        throw new \OutOfBoundsException("No child at index {$index} exists.");
+    }
+
+    /**
      * Returns all child nodes of this method.
      *
      * @return \PDepend\Source\AST\ASTNode[]

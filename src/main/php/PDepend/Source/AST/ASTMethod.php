@@ -187,7 +187,7 @@ class ASTMethod extends AbstractASTCallable
      * @param  \PDepend\Source\AST\AbstractASTType $parent
      * @return void
      */
-    public function setParent(AbstractASTType $parent = null)
+    public function setParent(ASTNode $parent = null)
     {
         $this->parent = $parent;
     }

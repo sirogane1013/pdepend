@@ -696,7 +696,7 @@ class ASTInterfaceTest extends AbstractASTArtifactTest
     public function testGetAllChildrenReturnsArrayWithExpectedNumberOfNodes()
     {
         $interface = $this->getFirstInterfaceForTestCase();
-        $this->assertSame(2, count($interface->getChildren()));
+        $this->assertSame(3, count($interface->getChildren()));
     }
 
     /**

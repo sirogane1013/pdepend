@@ -393,7 +393,7 @@ class ASTClassTest extends AbstractASTArtifactTest
     public function testGetAllChildrenReturnsArrayWithExpectedNumberOfNodes()
     {
         $class = $this->getFirstClassForTestCase();
-        $this->assertSame(2, count($class->getChildren()));
+        $this->assertSame(3, count($class->getChildren()));
     }
 
     /**

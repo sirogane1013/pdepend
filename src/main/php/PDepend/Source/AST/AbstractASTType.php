@@ -194,7 +194,7 @@ abstract class AbstractASTType extends AbstractASTArtifact
      *
      * @return \PDepend\Source\AST\ASTNode
      * @access private
-     * @todo   Refactor $_methods property to getAllMethods() when it exists.
+     * @todo Refactor $_methods property to getAllMethods() when it exists.
      */
     public function getFirstChildOfType($targetType)
     {
@@ -203,12 +203,6 @@ abstract class AbstractASTType extends AbstractASTArtifact
                 return $node;
             }
             if (($child = $node->getFirstChildOfType($targetType)) !== null) {
-                return $child;
-            }
-        }
-        $methods = $this->getMethods();
-        foreach ($methods as $method) {
-            if (($child = $method->getFirstChildOfType($targetType)) !== null) {
                 return $child;
             }
         }
@@ -233,10 +227,6 @@ abstract class AbstractASTType extends AbstractASTArtifact
                 $results[] = $node;
             }
             $node->findChildrenOfType($targetType, $results);
-        }
-
-        foreach ($this->getMethods() as $method) {
-            $method->findChildrenOfType($targetType, $results);
         }
 
         return $results;
@@ -275,6 +265,17 @@ abstract class AbstractASTType extends AbstractASTArtifact
             return new ASTArtifactList($this->methods);
         }
 
+        $this->methods = array();
+        foreach ($this->nodes as $node) {
+            if ($node instanceof ASTMethod) {
+                $node->compilationUnit = $this->compilationUnit;
+                $node->setParent($this);
+
+                $this->methods[] = $node;
+            }
+        }
+        return new ASTArtifactList($this->methods);
+/*
         $methods = (array) $this->cache
             ->type('methods')
             ->restore($this->getId());
@@ -285,6 +286,7 @@ abstract class AbstractASTType extends AbstractASTArtifact
         }
 
         return new ASTArtifactList($methods);
+*/
     }
 
     /**

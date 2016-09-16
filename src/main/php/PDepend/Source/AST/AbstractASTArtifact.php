@@ -48,7 +48,7 @@ namespace PDepend\Source\AST;
  * @copyright 2008-2015 Manuel Pichler. All rights reserved.
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-abstract class AbstractASTArtifact implements ASTArtifact
+abstract class AbstractASTArtifact implements ASTArtifact, ASTNode
 {
     /**
      * The name for this item.
@@ -65,6 +65,12 @@ abstract class AbstractASTArtifact implements ASTArtifact
     protected $id = null;
 
     /**
+     * @var \Pdepend\Source\AST\ASTNode
+     * @since 2.3
+     */
+    protected $parent;
+
+    /**
      * The line number where the item declaration starts.
      *
      * @var integer
@@ -77,6 +83,18 @@ abstract class AbstractASTArtifact implements ASTArtifact
      * @var integer
      */
     protected $endLine = 0;
+
+    /**
+     * @var integer
+     * @since 2.3
+     */
+    protected $startColumn = 0;
+
+    /**
+     * @var integer
+     * @since 2.3
+     */
+    protected $endColumn = 0;
 
     /**
      * The source file for this item.
@@ -103,11 +121,10 @@ abstract class AbstractASTArtifact implements ASTArtifact
     }
 
     /**
-     * Returns the item name.
-     *
      * @return string
+     * @since 2.3
      */
-    public function getName()
+    public function getImage()
     {
         return $this->name;
     }
@@ -116,9 +133,8 @@ abstract class AbstractASTArtifact implements ASTArtifact
      * Sets the item name.
      *
      * @param string $name The item name.
-     *
      * @return void
-     * @since  1.0.0
+     * @since 1.0.0
      */
     public function setName($name)
     {
@@ -163,7 +179,7 @@ abstract class AbstractASTArtifact implements ASTArtifact
     /**
      * Sets the source file for this item.
      *
-     * @param  \PDepend\Source\AST\ASTCompilationUnit $compilationUnit
+     * @param \PDepend\Source\AST\ASTCompilationUnit $compilationUnit
      * @return void
      */
     public function setCompilationUnit(ASTCompilationUnit $compilationUnit)
@@ -171,6 +187,41 @@ abstract class AbstractASTArtifact implements ASTArtifact
         if ($this->compilationUnit === null || $this->compilationUnit->getName() === null) {
             $this->compilationUnit = $compilationUnit;
         }
+    }
+
+    /**
+     * Returns the parent node of this node or <b>null</b> when this node is
+     * the root of a node tree.
+     *
+     * @return \PDepend\Source\AST\ASTNode
+     * @since 2.3
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param \PDepend\Source\AST\ASTNode $parent
+     * @return void
+     * @since 2.3
+     */
+    public function setParent(ASTNode $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * Traverses up the node tree and finds all parent nodes that are instances
+     * of <b>$parentType</b>.
+     *
+     * @param string $parentType
+     * @return \PDepend\Source\AST\ASTNode[]
+     * @since 2.3
+     */
+    public function getParentsOfType($parentType)
+    {
+        return array();
     }
 
     /**
@@ -215,6 +266,50 @@ abstract class AbstractASTArtifact implements ASTArtifact
         return $this->endLine;
     }
 
+    /**
+     * Returns the start column where the declaration of this artifact begins.
+     *
+     * @return integer
+     * @since 2.3
+     */
+    public function getStartColumn()
+    {
+        return $this->startColumn;
+    }
+
+    /**
+     * Returns the end column where the declaration of this artifact ends.
+     *
+     * @return integer
+     */
+    public function getEndColumn()
+    {
+        return $this->endColumn;
+    }
+
+    /**
+     * For better performance we have moved the single setter methods for the
+     * node columns and lines into this configure method.
+     *
+     * @param integer $startLine
+     * @param integer $endLine
+     * @param integer $startColumn
+     * @param integer $endColumn
+     * @return void
+     * @since 2.3
+     */
+    public function configureLinesAndColumns(
+        $startLine,
+        $endLine,
+        $startColumn,
+        $endColumn
+    ) {
+        $this->startLine = $startLine;
+        $this->startColumn = $startColumn;
+        $this->endLine = $endLine;
+        $this->endColumn = $endColumn;
+    }
+
     // BEGIN@deprecated
 
     /**
@@ -238,6 +333,17 @@ abstract class AbstractASTArtifact implements ASTArtifact
     public function setDocComment($docComment)
     {
         $this->setComment($docComment);
+    }
+
+    /**
+     * Returns the item name.
+     *
+     * @return string
+     * @deprecated Use getImage() instead since 2.3
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     // END@deprecated

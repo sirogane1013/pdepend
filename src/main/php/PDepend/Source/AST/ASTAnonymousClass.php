@@ -55,6 +55,31 @@ use PDepend\Source\ASTVisitor\ASTVisitor;
 class ASTAnonymousClass extends ASTClass
 {
     /**
+     * @var \PDepend\Source\AST\ASTNode
+     * @since 2.3
+     */
+    protected $parent;
+
+    /**
+     * @param \PDepend\Source\AST\ASTNode $parent
+     * @return void
+     * @since 2.3
+     */
+    public function setParent(ASTNode $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return \PDepend\Source\AST\ASTNode
+     * @since 2.3
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
      * Will return <b>true</b> if this class was declared anonymous in an
      * allocation expression.
      *

@@ -334,6 +334,60 @@ class ASTParameter extends AbstractASTArtifact
     }
 
     /**
+     * Returns the node instance for the given index or throws an exception.
+     *
+     * @param integer $index
+     * @return \PDepend\Source\AST\ASTNode
+     * @throws \OutOfBoundsException When no node exists at the given index.
+     * @since 2.3
+     */
+    public function getChild($index)
+    {
+        // TODO: Implement getChild() method.
+    }
+
+    /**
+     * This method returns all direct children of the actual node.
+     *
+     * @return \PDepend\Source\AST\ASTNode[]
+     * @since 2.3
+     */
+    public function getChildren()
+    {
+        // TODO: Implement getChildren() method.
+    }
+
+    /**
+     * This method will search recursive for the first child node that is an
+     * instance of the given <b>$targetType</b>. The returned value will be
+     * <b>null</b> if no child exists for that.
+     *
+     * @param string $targetType
+     * @return \PDepend\Source\AST\ASTNode
+     * @since 2.3
+     */
+    public function getFirstChildOfType($targetType)
+    {
+        // TODO: Implement getFirstChildOfType() method.
+    }
+
+    /**
+     * This method will search recursive for all child nodes that are an
+     * instance of the given <b>$targetType</b>. The returned value will be
+     * an empty <b>array</b> if no child exists for that.
+     *
+     * @param string $targetType Searched class or interface type.
+     * @param array &$results Already found node instances. This parameter
+     *        is only for internal usage.
+     * @return \PDepend\Source\AST\ASTNode[]
+     * @since 2.3
+     */
+    public function findChildrenOfType($targetType, array &$results = array())
+    {
+        // TODO: Implement findChildrenOfType() method.
+    }
+
+    /**
      * ASTVisitor method for node tree traversal.
      *
      * @param  \PDepend\Source\ASTVisitor\ASTVisitor $visitor

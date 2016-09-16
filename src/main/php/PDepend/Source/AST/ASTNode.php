@@ -134,6 +134,13 @@ interface ASTNode
     public function getParent();
 
     /**
+     * @param \PDepend\Source\AST\ASTNode $parent
+     * @return void
+     * @since 2.3
+     */
+    public function setParent(ASTNode $parent);
+
+    /**
      * Traverses up the node tree and finds all parent nodes that are instances
      * of <b>$parentType</b>.
      *
@@ -158,4 +165,22 @@ interface ASTNode
      * @return void
      */
     public function setComment($comment);
+
+    /**
+     * For better performance we have moved the single setter methods for the
+     * node columns and lines into this configure method.
+     *
+     * @param integer $startLine
+     * @param integer $endLine
+     * @param integer $startColumn
+     * @param integer $endColumn
+     * @return void
+     * @since 2.3
+     */
+    public function configureLinesAndColumns(
+        $startLine,
+        $endLine,
+        $startColumn,
+        $endColumn
+    );
 }

@@ -57,6 +57,92 @@ use PDepend\Source\Tokenizer\Tokens;
  */
 abstract class PHPParserVersion56 extends PHPParserVersion55
 {
+    /* Keyword test methods {{{ */
+
+    /**
+     * Tests if the give token is a valid class name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isClassName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid constant name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isConstantName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid function name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isFunctionName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid namespace name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isNamespaceName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+                return true;
+        }
+        return false;
+    }
+
+    /* }}} Keyword test methods */
+
     /**
      * Parses additional static values that are valid in the supported php version.
      *

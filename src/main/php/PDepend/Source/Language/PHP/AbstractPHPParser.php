@@ -48,24 +48,33 @@ use PDepend\Source\AST\AbstractASTType;
 use PDepend\Source\AST\ASTAllocationExpression;
 use PDepend\Source\AST\ASTArray;
 use PDepend\Source\AST\ASTClass;
+use PDepend\Source\AST\ASTClosure;
+use PDepend\Source\AST\ASTCompoundVariable;
 use PDepend\Source\AST\ASTDeclareStatement;
 use PDepend\Source\AST\ASTExpression;
+use PDepend\Source\AST\ASTFunctionPostfix;
 use PDepend\Source\AST\ASTIndexExpression;
 use PDepend\Source\AST\ASTInterface;
+use PDepend\Source\AST\ASTMemberPrimaryPrefix;
 use PDepend\Source\AST\ASTNode;
 use PDepend\Source\AST\ASTStatement;
 use PDepend\Source\AST\ASTSwitchStatement;
 use PDepend\Source\AST\ASTTrait;
 use PDepend\Source\AST\ASTValue;
+use PDepend\Source\AST\ASTVariable;
+use PDepend\Source\AST\ASTVariableVariable;
 use PDepend\Source\AST\State;
 use PDepend\Source\Builder\Builder;
 use PDepend\Source\Parser\InvalidStateException;
 use PDepend\Source\Parser\MissingValueException;
+use PDepend\Source\Parser\SymbolTable;
+use PDepend\Source\Parser\TokenStack;
 use PDepend\Source\Parser\TokenStreamEndException;
 use PDepend\Source\Parser\UnexpectedTokenException;
 use PDepend\Source\Tokenizer\Token;
 use PDepend\Source\Tokenizer\Tokenizer;
 use PDepend\Source\Tokenizer\Tokens;
+use PDepend\Util\IdBuilder;
 use PDepend\Util\Cache\CacheDriver;
 use PDepend\Util\Log;
 use PDepend\Util\Type;
@@ -231,7 +240,7 @@ abstract class AbstractPHPParser
     /**
      * Stack with all active token scopes.
      *
-     * @var \PDepend\Source\Tokenizer\TokenStack
+     * @var \PDepend\Source\Parser\TokenStack
      */
     private $tokenStack;
 
@@ -278,9 +287,9 @@ abstract class AbstractPHPParser
         $this->builder   = $builder;
         $this->cache     = $cache;
 
-        $this->idBuilder    = new \PDepend\Util\IdBuilder();
-        $this->tokenStack     = new \PDepend\Source\Parser\TokenStack();
-        $this->useSymbolTable = new \PDepend\Source\Parser\SymbolTable();
+        $this->idBuilder = new IdBuilder();
+        $this->tokenStack = new TokenStack();
+        $this->useSymbolTable = new SymbolTable();
 
         $this->builder->setCache($this->cache);
     }
@@ -472,29 +481,40 @@ abstract class AbstractPHPParser
     }
 
     /**
-     * Will return <b>true</b> if the given <b>$tokenType</b> is a valid class
-     * name part.
+     * Tests if the give token is a valid class name in the supported PHP
+     * version.
      *
      * @param integer $tokenType
      * @return boolean
-     * @since 0.10.6
      */
-    protected function isClassName($tokenType)
-    {
-        switch ($tokenType) {
-            case Tokens::T_NULL:
-            case Tokens::T_TRUE:
-            case Tokens::T_FALSE:
-            case Tokens::T_TRAIT:
-            case Tokens::T_YIELD:
-            case Tokens::T_STRING:
-            case Tokens::T_TRAIT_C:
-            case Tokens::T_CALLABLE:
-            case Tokens::T_INSTEADOF:
-                return true;
-        }
-        return false;
-    }
+    abstract protected function isClassName($tokenType);
+
+    /**
+     * Tests if the give token is a valid function name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    abstract protected function isFunctionName($tokenType);
+
+    /**
+     * Tests if the give token is a valid constant name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    abstract protected function isConstantName($tokenType);
+
+    /**
+     * Tests if the give token is a valid namespace name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    abstract protected function isNamespaceName($tokenType);
 
     /**
      * Parses a function name from the given tokenizer and returns the string
@@ -517,33 +537,6 @@ abstract class AbstractPHPParser
         }
 
         $this->throwUnexpectedTokenException();
-    }
-
-    /**
-     * Tests if the give token is a valid function name in the supported PHP
-     * version.
-     *
-     * @param integer $tokenType
-     * @return boolean
-     * @since 2.3
-     */
-    protected function isFunctionName($tokenType)
-    {
-        switch ($tokenType) {
-            case Tokens::T_NULL:
-            case Tokens::T_SELF:
-            case Tokens::T_TRUE:
-            case Tokens::T_FALSE:
-            case Tokens::T_TRAIT:
-            case Tokens::T_YIELD:
-            case Tokens::T_PARENT:
-            case Tokens::T_STRING:
-            case Tokens::T_TRAIT_C:
-            case Tokens::T_CALLABLE:
-            case Tokens::T_INSTEADOF:
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -4872,6 +4865,7 @@ abstract class AbstractPHPParser
     /**
      * Parses an array structure.
      *
+     * @param boolean $static
      * @return \PDepend\Source\AST\ASTArray
      * @since 1.0.0
      */
@@ -5734,12 +5728,11 @@ abstract class AbstractPHPParser
     /**
      * Parses a list of bound closure variables.
      *
-     * @param \PDepend\Source\AST\ASTClosure $closure The parent closure instance.
-     *
+     * @param \PDepend\Source\AST\ASTClosure $closure
      * @return \PDepend\Source\AST\ASTClosure
      * @since 0.9.5
      */
-    private function parseBoundVariables(\PDepend\Source\AST\ASTClosure $closure)
+    private function parseBoundVariables(ASTClosure $closure)
     {
         $this->consumeToken(Tokens::T_USE);
 
@@ -6080,8 +6073,8 @@ abstract class AbstractPHPParser
         $this->tokenStack->push();
 
         $tokenType = $this->tokenizer->peek();
-        if (false === $this->isKeyword($tokenType)) {
-
+        if (false === $this->isConstantName($tokenType)) {
+            $this->throwUnexpectedTokenException();
         }
 
         $token = $this->consumeToken(Tokens::T_STRING);
@@ -6412,11 +6405,11 @@ abstract class AbstractPHPParser
      */
     private function isReadWriteVariable($expr)
     {
-        return ($expr instanceof \PDepend\Source\AST\ASTVariable
-            || $expr instanceof \PDepend\Source\AST\ASTFunctionPostfix
-            || $expr instanceof \PDepend\Source\AST\ASTVariableVariable
-            || $expr instanceof \PDepend\Source\AST\ASTCompoundVariable
-            || $expr instanceof \PDepend\Source\AST\ASTMemberPrimaryPrefix);
+        return ($expr instanceof ASTVariable
+            || $expr instanceof ASTFunctionPostfix
+            || $expr instanceof ASTVariableVariable
+            || $expr instanceof ASTCompoundVariable
+            || $expr instanceof ASTMemberPrimaryPrefix);
     }
 
     /**

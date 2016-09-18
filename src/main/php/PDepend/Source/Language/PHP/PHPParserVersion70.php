@@ -65,6 +65,239 @@ use PDepend\Source\Tokenizer\Tokens;
  */
 abstract class PHPParserVersion70 extends PHPParserVersion56
 {
+    /* Keyword test methods {{{ */
+
+    /**
+     * Tests if the give token is a valid class name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isClassName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid constant name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isConstantName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+            case Tokens::T_ABSTRACT:
+            case Tokens::T_ARRAY:
+            case Tokens::T_AS:
+            case Tokens::T_BREAK:
+            case Tokens::T_CALLABLE:
+            case Tokens::T_CASE:
+            case Tokens::T_CATCH:
+            case Tokens::T_CLASS_C:
+            case Tokens::T_CLONE:
+            case Tokens::T_CONST:
+            case Tokens::T_CONTINUE:
+            case Tokens::T_DECLARE:
+            case Tokens::T_DEFAULT:
+            case Tokens::T_DIR:
+            case Tokens::T_DO:
+            case Tokens::T_ECHO:
+            case Tokens::T_ELSE:
+            case Tokens::T_ELSEIF:
+            case Tokens::T_EMPTY:
+            case Tokens::T_ENDDECLARE:
+            case Tokens::T_ENDFOR:
+            case Tokens::T_ENDFOREACH:
+            case Tokens::T_ENDIF:
+            case Tokens::T_ENDSWITCH:
+            case Tokens::T_ENDWHILE:
+            case Tokens::T_EVAL:
+            case Tokens::T_EXIT:
+            case Tokens::T_EXTENDS:
+            case Tokens::T_FILE:
+            case Tokens::T_FINAL:
+            case Tokens::T_FINALLY:
+            case Tokens::T_FOR:
+            case Tokens::T_FOREACH:
+            case Tokens::T_FUNCTION:
+            case Tokens::T_FUNC_C:
+            case Tokens::T_GLOBAL:
+            case Tokens::T_GOTO:
+            case Tokens::T_HALT_COMPILER:
+            case Tokens::T_IF:
+            case Tokens::T_IMPLEMENTS:
+            case Tokens::T_INCLUDE:
+            case Tokens::T_INCLUDE_ONCE:
+            case Tokens::T_INSTANCEOF:
+            case Tokens::T_INSTEADOF:
+            case Tokens::T_INTERFACE:
+            case Tokens::T_ISSET:
+            case Tokens::T_LINE:
+            case Tokens::T_LIST:
+            case Tokens::T_LOGICAL_AND:
+            case Tokens::T_LOGICAL_OR:
+            case Tokens::T_LOGICAL_XOR:
+            case Tokens::T_METHOD_C:
+            case Tokens::T_NAMESPACE:
+            case Tokens::T_NEW:
+            case Tokens::T_NS_C:
+            case Tokens::T_PRINT:
+            case Tokens::T_PRIVATE:
+            case Tokens::T_PROTECTED:
+            case Tokens::T_PUBLIC:
+            case Tokens::T_REQUIRE:
+            case Tokens::T_REQUIRE_ONCE:
+            case Tokens::T_RETURN:
+            case Tokens::T_STATIC:
+            case Tokens::T_SWITCH:
+            case Tokens::T_THROW:
+            case Tokens::T_TRAIT:
+            case Tokens::T_TRAIT_C:
+            case Tokens::T_TRY:
+            case Tokens::T_UNSET:
+            case Tokens::T_USE:
+            case Tokens::T_VAR:
+            case Tokens::T_WHILE:
+            case Tokens::T_YIELD:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid function name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isFunctionName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+            case Tokens::T_ABSTRACT:
+            case Tokens::T_ARRAY:
+            case Tokens::T_AS:
+            case Tokens::T_BREAK:
+            case Tokens::T_CALLABLE:
+            case Tokens::T_CASE:
+            case Tokens::T_CATCH:
+            case Tokens::T_CLASS:
+            case Tokens::T_CLASS_C:
+            case Tokens::T_CLONE:
+            case Tokens::T_CONST:
+            case Tokens::T_CONTINUE:
+            case Tokens::T_DECLARE:
+            case Tokens::T_DEFAULT:
+            case Tokens::T_DIR:
+            case Tokens::T_DO:
+            case Tokens::T_ECHO:
+            case Tokens::T_ELSE:
+            case Tokens::T_ELSEIF:
+            case Tokens::T_EMPTY:
+            case Tokens::T_ENDDECLARE:
+            case Tokens::T_ENDFOR:
+            case Tokens::T_ENDFOREACH:
+            case Tokens::T_ENDIF:
+            case Tokens::T_ENDSWITCH:
+            case Tokens::T_ENDWHILE:
+            case Tokens::T_EVAL:
+            case Tokens::T_EXIT:
+            case Tokens::T_EXTENDS:
+            case Tokens::T_FILE:
+            case Tokens::T_FINAL:
+            case Tokens::T_FINALLY:
+            case Tokens::T_FOR:
+            case Tokens::T_FOREACH:
+            case Tokens::T_FUNCTION:
+            case Tokens::T_FUNC_C:
+            case Tokens::T_GLOBAL:
+            case Tokens::T_GOTO:
+            case Tokens::T_HALT_COMPILER:
+            case Tokens::T_IF:
+            case Tokens::T_IMPLEMENTS:
+            case Tokens::T_INCLUDE:
+            case Tokens::T_INCLUDE_ONCE:
+            case Tokens::T_INSTANCEOF:
+            case Tokens::T_INSTEADOF:
+            case Tokens::T_INTERFACE:
+            case Tokens::T_ISSET:
+            case Tokens::T_LINE:
+            case Tokens::T_LIST:
+            case Tokens::T_LOGICAL_AND:
+            case Tokens::T_LOGICAL_OR:
+            case Tokens::T_LOGICAL_XOR:
+            case Tokens::T_METHOD_C:
+            case Tokens::T_NAMESPACE:
+            case Tokens::T_NEW:
+            case Tokens::T_NS_C:
+            case Tokens::T_PRINT:
+            case Tokens::T_PRIVATE:
+            case Tokens::T_PROTECTED:
+            case Tokens::T_PUBLIC:
+            case Tokens::T_REQUIRE:
+            case Tokens::T_REQUIRE_ONCE:
+            case Tokens::T_RETURN:
+            case Tokens::T_STATIC:
+            case Tokens::T_SWITCH:
+            case Tokens::T_THROW:
+            case Tokens::T_TRAIT:
+            case Tokens::T_TRAIT_C:
+            case Tokens::T_TRY:
+            case Tokens::T_UNSET:
+            case Tokens::T_USE:
+            case Tokens::T_VAR:
+            case Tokens::T_WHILE:
+            case Tokens::T_YIELD:
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the give token is a valid namespace name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isNamespaceName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+                return true;
+        }
+        return false;
+    }
+
+    /* }}} Keyword test methods */
+
     /**
      * @param \PDepend\Source\AST\AbstractASTCallable $callable
      * @return \PDepend\Source\AST\AbstractASTCallable

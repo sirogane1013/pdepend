@@ -61,13 +61,14 @@ use PDepend\Source\Tokenizer\Tokens;
  */
 abstract class PHPParserVersion54 extends PHPParserVersion53
 {
+    /* Keyword test methods {{{ */
+
     /**
-     * Will return <b>true</b> if the given <b>$tokenType</b> is a valid class
-     * name part.
+     * Tests if the give token is a valid class name in the supported PHP
+     * version.
      *
-     * @param  integer $tokenType The type of a parsed token.
+     * @param integer $tokenType
      * @return boolean
-     * @since  0.10.6
      */
     protected function isClassName($tokenType)
     {
@@ -76,32 +77,83 @@ abstract class PHPParserVersion54 extends PHPParserVersion53
             case Tokens::T_TRUE:
             case Tokens::T_FALSE:
             case Tokens::T_STRING:
+            case Tokens::T_FINALLY:
+            case Tokens::T_YIELD:
                 return true;
         }
         return false;
     }
-
+    
+    /**
+     * Tests if the give token is a valid constant name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isConstantName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+            case Tokens::T_FINALLY:
+            case Tokens::T_YIELD:
+                return true;
+        }
+        return false;
+    }
+    
     /**
      * Tests if the give token is a valid function name in the supported PHP
      * version.
      *
      * @param integer $tokenType
      * @return boolean
-     * @since 2.3
      */
     protected function isFunctionName($tokenType)
     {
         switch ($tokenType) {
-            case Tokens::T_STRING:
             case Tokens::T_NULL:
             case Tokens::T_SELF:
             case Tokens::T_TRUE:
             case Tokens::T_FALSE:
+            case Tokens::T_STRING:
             case Tokens::T_PARENT:
+            case Tokens::T_FINALLY:
+            case Tokens::T_YIELD:
                 return true;
         }
         return false;
     }
+    
+    /**
+     * Tests if the give token is a valid namespace name in the supported PHP
+     * version.
+     *
+     * @param integer $tokenType
+     * @return boolean
+     */
+    protected function isNamespaceName($tokenType)
+    {
+        switch ($tokenType) {
+            case Tokens::T_NULL:
+            case Tokens::T_SELF:
+            case Tokens::T_TRUE:
+            case Tokens::T_FALSE:
+            case Tokens::T_STRING:
+            case Tokens::T_PARENT:
+            case Tokens::T_FINALLY:
+            case Tokens::T_YIELD:
+                return true;
+        }
+        return false;
+    }
+
+    /* }}} Keyword test methods */
 
     /**
      * Tests if the given token type is a reserved keyword in the supported PHP

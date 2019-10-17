@@ -78,7 +78,8 @@ class ClassLevelAnalyzer extends AbstractAnalyzer implements AggregateAnalyzer, 
           M_PROPERTIES_NON_PRIVATE       = 'varsnp',
           M_WEIGHTED_METHODS             = 'wmc',
           M_WEIGHTED_METHODS_INHERIT     = 'wmci',
-          M_WEIGHTED_METHODS_NON_PRIVATE = 'wmcnp';
+          M_WEIGHTED_METHODS_NON_PRIVATE = 'wmcnp',
+          M_NUMBER_OF_PUBLIC_ACCESSOR    = 'nopa';
 
     /**
      * Hash with all calculated node metrics.
@@ -206,7 +207,8 @@ class ClassLevelAnalyzer extends AbstractAnalyzer implements AggregateAnalyzer, 
             self::M_PROPERTIES_NON_PRIVATE       => 0,
             self::M_WEIGHTED_METHODS             => 0,
             self::M_WEIGHTED_METHODS_INHERIT     => $wmci,
-            self::M_WEIGHTED_METHODS_NON_PRIVATE => 0
+            self::M_WEIGHTED_METHODS_NON_PRIVATE => 0,
+            self::M_NUMBER_OF_PUBLIC_ACCESSOR    => 0
         );
 
         foreach ($class->getProperties() as $property) {
@@ -292,6 +294,9 @@ class ClassLevelAnalyzer extends AbstractAnalyzer implements AggregateAnalyzer, 
             $this->nodeMetrics[$id][self::M_WEIGHTED_METHODS_NON_PRIVATE] += $ccn;
             // Increment Class Interface Size(CIS) value
             ++$this->nodeMetrics[$id][self::M_CLASS_INTERFACE_SIZE];
+            if ($method->isAccessor()) {
+                ++$this->nodeMetrics[$id][self::M_NUMBER_OF_PUBLIC_ACCESSOR];
+            };
         }
 
         $this->fireEndMethod($method);

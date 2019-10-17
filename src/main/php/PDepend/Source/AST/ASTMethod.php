@@ -93,11 +93,11 @@ class ASTMethod extends AbstractASTCallable
     public function setModifiers($modifiers)
     {
         $expected = ~State::IS_PUBLIC
-                  & ~State::IS_PROTECTED
-                  & ~State::IS_PRIVATE
-                  & ~State::IS_STATIC
-                  & ~State::IS_ABSTRACT
-                  & ~State::IS_FINAL;
+            & ~State::IS_PROTECTED
+            & ~State::IS_PRIVATE
+            & ~State::IS_STATIC
+            & ~State::IS_ABSTRACT
+            & ~State::IS_FINAL;
 
         if (($expected & $modifiers) !== 0) {
             throw new \InvalidArgumentException('Invalid method modifier given.');
@@ -169,6 +169,45 @@ class ASTMethod extends AbstractASTCallable
     public function isFinal()
     {
         return (($this->modifiers & State::IS_FINAL) === State::IS_FINAL);
+    }
+
+    /**
+     * Returns <b>true</b> when this node represents accessor method, otherwise the
+     * returned value will be <b>false</b>.
+     *
+     * @return boolean
+     */
+    public function isAccessor()
+    {
+        return $this->isGetter() || $this->isSetter();
+    }
+
+    /**
+     * Returns <b>true</b> when this node represents getter method, otherwise the
+     * returned value will be <b>false</b>.
+     *
+     * @return boolean
+     */
+    public function isGetter()
+    {
+        if (count($this->getParameters()) !==0) {
+            return false;
+        }
+        return preg_match("/(get|is).*/", $this->getName()) === 1;
+    }
+
+    /**
+     * Returns <b>true</b> when this node represents setter method, otherwise the
+     * returned value will be <b>false</b>.
+     *
+     * @return boolean
+     */
+    public function isSetter()
+    {
+        if (count($this->getParameters()) !==1) {
+            return false;
+        }
+        return preg_match("/set.*/", $this->getName()) === 1;
     }
 
     /**

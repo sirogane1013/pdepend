@@ -183,6 +183,17 @@ class ASTMethod extends AbstractASTCallable
     }
 
     /**
+     * Returns <b>true</b> when this node represents constructor, otherwise the
+     * returned value will be <b>false</b>.
+     *
+     * @return boolean
+     */
+    public function isConstructor()
+    {
+        return preg_match("/__construct.*/", $this->getName()) === 1;
+    }
+
+    /**
      * Returns <b>true</b> when this node represents getter method, otherwise the
      * returned value will be <b>false</b>.
      *
